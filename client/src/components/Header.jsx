@@ -26,7 +26,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Tooltip from "@mui/material/Tooltip";
 
 // Decode user
-import { DecodeToken } from "../utils/userDecode";
+import { userDecode } from "../utils/userDecode";
 
 function Header() {
   // Opening the boxes
@@ -70,7 +70,23 @@ function Header() {
               <div className="userdetails">
                 <p className="userdetailboxes">My Groups</p>
                 <p className="userdetailboxes">Create Groups</p>
-                <p className="userdetailboxes">Logout</p>
+                <p
+                  className="userdetailboxes"
+                  onClick={() => {
+                    localStorage.clear();
+                    user[1](null);
+                    setUserStatus({
+                      user:null,
+                      status:'success',
+                      message:"Logged out successfully"
+                    })
+                    handleOpensnackbar()
+
+                  }}
+                  
+                >
+                  Logout
+                </p>
                 <Tooltip title={user[0]?.username}>
                   <Avatar
                     className="profilepic"
@@ -121,7 +137,7 @@ function Header() {
                 SignUp(usersignup, event).then((response) => {
                   setUserStatus(response);
                   handleOpensnackbar();
-                  user[1](response.user);
+                  user[1](userDecode(response.user));
                 });
               }}
             >
@@ -197,7 +213,7 @@ function Header() {
                 SignIn(usersignIn, event).then((response) => {
                   setUserStatus(response);
                   handleOpensnackbar();
-                  user[1](response.user);
+                  user[1](userDecode(response.user));
                 });
               }}
             >
@@ -212,7 +228,9 @@ function Header() {
                 className="input_boxes"
                 required
                 value={usersignIn.email}
-                onChange={(e)=>{setusersignin({...usersignIn,email:e.target.value})}}
+                onChange={(e) => {
+                  setusersignin({ ...usersignIn, email: e.target.value });
+                }}
               />
               <TextField
                 id="outlined-basic"
@@ -222,14 +240,18 @@ function Header() {
                 required
                 type="password"
                 value={usersignIn.password}
-                onChange={(e)=>{setusersignin({...usersignIn,password:e.target.value})}}
+                onChange={(e) => {
+                  setusersignin({ ...usersignIn, password: e.target.value });
+                }}
               />
               <br />
               <div className="btns_container">
                 <Button className="btns" type="submit">
                   SignIn
                 </Button>
-                <Button className="btns">Close</Button>
+                <Button className="btns" onClick={handleCloseDialougeBox}>
+                  Close
+                </Button>
               </div>
             </form>
           )}

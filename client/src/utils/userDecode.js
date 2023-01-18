@@ -1,7 +1,7 @@
-// JWT decode token
-import jwt from 'jsonwebtoken'
+// JWT to decode the token
+import jwtDecode from "jwt-decode";
 
-export const DecodeToken = (token)=>{
-    const user = jwt.decode(token);
+export const userDecode = (token)=>{
+    const user = jwtDecode(token);
     return user;
 }

@@ -13,8 +13,8 @@ app.use(express.json());
 // SiginUp user model
 const SignUpUsermodel = require("./models/user.models");
 
-// JWT 
-const jwt = require('jsonwebtoken')
+// JWT for encoding
+const jwt = require("jsonwebtoken");
 
 // Conecting Mongoose
 const mongoose = require("mongoose");
@@ -61,7 +61,11 @@ app.post("/api/signup", async (req, res) => {
       password: userdetails.password,
     });
     newUser.save();
-    const token = jwt.sign({newUser});
+    // Generating the token for username and email
+    const token = jwt.sign({
+      username: userdetails.username,
+      email: userdetails.email,
+    },"sameer@22");
     res.send({
       status: "success",
       user: token,
@@ -88,8 +92,11 @@ app.post("/api/signin", async (req, res) => {
       message: "Incorrect Password",
     });
   } else {
-    const token = jwt.sign({user});
-    console.log(token);
+    // Generating the token for username and email
+    const token = jwt.sign({
+      username: userindb.username,
+      email: userindb.email,
+    },"sameer@22");
     res.send({
       status: "success",
       user: token,
@@ -97,6 +104,13 @@ app.post("/api/signin", async (req, res) => {
     });
   }
 });
+
+// verifiying the token
+app.post('/api/verif_token',(req,res)=>{
+    const token = req.body.body.token;
+    console.log("The token is :",token);
+})
+
 // Logout
 app.get("/api/logout", (req, res) => {
   res.send({

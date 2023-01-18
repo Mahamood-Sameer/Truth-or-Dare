@@ -6,6 +6,6 @@ export const SignUp = async (userdetails,event)=>{
         body:userdetails
     })
     const data = await response.data;
-    console.log("The data is:",data)
+    localStorage.setItem("UserDetails",JSON.stringify(data));
     return data;
 }   
