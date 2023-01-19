@@ -28,6 +28,9 @@ import Tooltip from "@mui/material/Tooltip";
 // Decode user
 import { userDecode } from "../utils/userDecode";
 
+// Redirect for react-router-dom
+import { useNavigate } from "react-router-dom";
+
 function Header() {
   // Opening the boxes
   const [open, setOpen] = useState(false);
@@ -58,6 +61,9 @@ function Header() {
   });
   // User-Status
   const [userstatus, setUserStatus] = useState(null);
+  
+  // Navigation
+  const navigate = useNavigate();
 
   return (
     <>
@@ -69,21 +75,28 @@ function Header() {
             <>
               <div className="userdetails">
                 <p className="userdetailboxes">My Groups</p>
-                <p className="userdetailboxes">Create Groups</p>
+                <p
+                  className="userdetailboxes"
+                  onClick={() => {
+                    console.log("Hello");
+                    return navigate("/creategroup");
+                  }}
+                >
+                  Create Groups
+                </p>
                 <p
                   className="userdetailboxes"
                   onClick={() => {
                     localStorage.clear();
                     user[1](null);
                     setUserStatus({
-                      user:null,
-                      status:'success',
-                      message:"Logged out successfully"
-                    })
-                    handleOpensnackbar()
-
+                      user: null,
+                      status: "success",
+                      message: "Logged out successfully",
+                    });
+                    handleOpensnackbar();
+                    return navigate('/');
                   }}
-                  
                 >
                   Logout
                 </p>

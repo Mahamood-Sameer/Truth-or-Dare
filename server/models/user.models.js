@@ -19,6 +19,9 @@ const User = new mongoose.Schema(
     confirmpassword: {
       type: String
     },
+    groups:{
+      type:Array
+    }
   }
 );
 

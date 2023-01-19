@@ -7,8 +7,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 // useContext
 import { createContext, useEffect, useState } from "react";
 import { userDecode } from "./utils/userDecode";
-export const UserContext = createContext();
 
+// React Router
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import CreateGroup from "./components/CreateGroup";
+
+export const UserContext = createContext();
 function App() {
   // User
   const [user, setUser] = useState(null);
@@ -25,15 +29,20 @@ function App() {
     }
   }, []);
   return (
-    <UserContext.Provider value={[user, setUser]}>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        <div className="App">
-          <Header />
-          <Body />
-        </div>
-      </ThemeProvider>
-    </UserContext.Provider>
+    <BrowserRouter>
+        <UserContext.Provider value={[user, setUser]}>
+          <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <div className="App">
+              <Header />
+              <Routes>
+                <Route path="/" element={<Body />} />
+                <Route path="/creategroup" element={<CreateGroup />} />
+              </Routes>
+            </div>
+          </ThemeProvider>
+        </UserContext.Provider>
+    </BrowserRouter>
   );
 }
 

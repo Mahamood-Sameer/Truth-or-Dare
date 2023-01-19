@@ -1,0 +1,27 @@
+.creategroup{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid grey;
+    border-radius: 5px;
+    width: 40vw;
+    margin:auto;
+    margin-top: 50px;
+}
+.groupform{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 80% !important;
+}
+.groupform Button{
+    width: fit-content !important;
+    margin: auto !important;
+    margin-top: 20px !important;
+    text-transform: none !important;
+    background-color: blue !important;
+    color: white;
+}

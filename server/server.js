@@ -10,8 +10,9 @@ app.use(cors());
 // Using Json in Body
 app.use(express.json());
 
-// SiginUp user model
+//models
 const SignUpUsermodel = require("./models/user.models");
+const GroupModel = require("./models/group.models");
 
 // JWT for encoding
 const jwt = require("jsonwebtoken");
@@ -62,10 +63,13 @@ app.post("/api/signup", async (req, res) => {
     });
     newUser.save();
     // Generating the token for username and email
-    const token = jwt.sign({
-      username: userdetails.username,
-      email: userdetails.email,
-    },"sameer@22");
+    const token = jwt.sign(
+      {
+        username: userdetails.username,
+        email: userdetails.email,
+      },
+      "sameer@22"
+    );
     res.send({
       status: "success",
       user: token,
@@ -93,10 +97,13 @@ app.post("/api/signin", async (req, res) => {
     });
   } else {
     // Generating the token for username and email
-    const token = jwt.sign({
-      username: userindb.username,
-      email: userindb.email,
-    },"sameer@22");
+    const token = jwt.sign(
+      {
+        username: userindb.username,
+        email: userindb.email,
+      },
+      "sameer@22"
+    );
     res.send({
       status: "success",
       user: token,
@@ -105,17 +112,71 @@ app.post("/api/signin", async (req, res) => {
   }
 });
 
-// verifiying the token
-app.post('/api/verif_token',(req,res)=>{
-    const token = req.body.body.token;
-    console.log("The token is :",token);
-})
-
-// Logout
-app.get("/api/logout", (req, res) => {
-  res.send({
-    name: "logout",
+// Allusers
+app.get("/api/allusers", async (req, res) => {
+  const data = await SignUpUsermodel.find();
+  var usersgroup = [];
+  data?.map((user) => {
+    usersgroup.push({
+      username: user.username,
+      email: user.email,
+      docid: user._id,
+    });
   });
+  res.send(usersgroup);
+});
+
+// CreateGroup
+app.post("/api/creategroup", async (req, res) => {
+  const data = req.body.body;
+  if (data.groupname === null) {
+    res.send({
+      status: "error",
+      group: null,
+      message: "Groupname is required",
+    });
+  } else if (data.usersingroup.length === 0) {
+    res.send({
+      status: "error",
+      group: null,
+      message: "Add atleast a single user",
+    });
+  } else {
+    let newgroup = new GroupModel({
+      groupname: data.groupname,
+      description: data.description,
+      admin: data.admin,
+      users: data.usersingroup,
+      messages: [],
+    });
+    newgroup.save();
+    data.usersingroup.map(async (user) => {
+      const userindp = await SignUpUsermodel.findById(user.docid);
+      let prevgroups = userindp.groups;
+      prevgroups.push({
+        groupname: newgroup.groupname,
+        users: newgroup.users,
+        docid: newgroup._id,
+      });
+      console.log("The previous group is : ", prevgroups);
+      console.log("The User is : ", userindp);
+      await SignUpUsermodel.updateOne(
+        {
+          username: user.username,
+        },
+        {
+          $set: {
+            groups: prevgroups,
+          },
+        }
+      );
+    });
+    res.send({
+      status: "success",
+      group: newgroup,
+      message: "Group created succesfully",
+    });
+  }
 });
 
 // ---------End of Routes--------
