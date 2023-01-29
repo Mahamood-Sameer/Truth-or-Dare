@@ -8,10 +8,13 @@ import { useAutocomplete } from "@mui/base/AutocompleteUnstyled";
 import { Root, Label, StyledTag, Listbox, InputWrapper } from "../utils/Styles";
 import { GetAllusers } from "../api/getAllusers";
 import { creategroup } from "../api/creategroup";
+// Redirect for react-router-dom
+import { useNavigate } from "react-router-dom";
 
 // SnackBar
 import { Alert } from "../utils/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import { userDecode } from "../utils/userDecode";
 
 function CreateGroup() {
   // Opening the snackbar
@@ -53,6 +56,14 @@ function CreateGroup() {
       .catch((err) => {});
   }, []);
 
+  // Navigation
+  const navigate = useNavigate();
+
+  // Admin
+  var admin = localStorage.getItem("UserDetails");
+  admin = JSON.parse(admin);
+  admin = userDecode(admin.user);
+  console.log("The user is:", admin);
   return (
     <div className="creategroup">
       <h2>Create Group</h2>
@@ -87,12 +98,18 @@ function CreateGroup() {
             </div>
             {groupedOptions?.length > 0 ? (
               <Listbox {...getListboxProps()}>
-                {groupedOptions?.map((option, index) => (
-                  <li {...getOptionProps({ option, index })}>
-                    <span>{option.username}</span>
-                    <CheckIcon fontSize="small" />
-                  </li>
-                ))}
+                {groupedOptions?.map((option, index) => {
+                  if (option.username === admin.username) {
+                    return <></>;
+                  } else {
+                    return (
+                      <li {...getOptionProps({ option, index })}>
+                        <span>{option.username}</span>
+                        <CheckIcon fontSize="small" />
+                      </li>
+                    );
+                  }
+                })}
               </Listbox>
             ) : null}
           </Root>
@@ -111,10 +128,13 @@ function CreateGroup() {
         />
         <Button
           onClick={() => {
-            creategroup(groupname, groupdescription, value).then((group)=>{
-                setgroupstatus(group);
-                handleOpensnackbar();
-            })
+            creategroup(groupname, groupdescription, value).then((group) => {
+              setgroupstatus(group);
+              handleOpensnackbar();
+              if (group.status === "success") {
+                return navigate("/mygroups");
+              }
+            });
           }}
         >
           Create Group

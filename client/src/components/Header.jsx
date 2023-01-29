@@ -29,7 +29,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { userDecode } from "../utils/userDecode";
 
 // Redirect for react-router-dom
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
   // Opening the boxes
@@ -68,17 +68,20 @@ function Header() {
   return (
     <>
       <div className="header">
+        <Link to="/">
         <img src={logo} alt="logo" className="logo_header" />
+        </Link>
         <div className="header_right">
           <p>• {now}</p>
           {user[0] ? (
             <>
               <div className="userdetails">
-                <p className="userdetailboxes">My Groups</p>
+                <p className="userdetailboxes" onClick={() => {
+                    return navigate("/mygroups");
+                  }}>My Groups</p>
                 <p
                   className="userdetailboxes"
                   onClick={() => {
-                    console.log("Hello");
                     return navigate("/creategroup");
                   }}
                 >

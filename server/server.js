@@ -2,6 +2,14 @@ const express = require("express");
 
 const app = express();
 
+// Https server
+const http = require("http");
+const serverback = http.createServer(app);
+
+//Socket.io
+const { Server } = require("socket.io");
+const io1 = new Server(serverback);
+
 const cors = require("cors");
 
 // Cors policy
@@ -142,24 +150,25 @@ app.post("/api/creategroup", async (req, res) => {
       message: "Add atleast a single user",
     });
   } else {
+    var prev = data.usersingroup;
+    prev.push(data.admin);
     let newgroup = new GroupModel({
       groupname: data.groupname,
       description: data.description,
       admin: data.admin,
-      users: data.usersingroup,
+      users: prev,
       messages: [],
     });
     newgroup.save();
+    // Participents db updation
     data.usersingroup.map(async (user) => {
       const userindp = await SignUpUsermodel.findById(user.docid);
-      let prevgroups = userindp.groups;
+      let prevgroups = userindp.groups ? userindp : [];
       prevgroups.push({
         groupname: newgroup.groupname,
         users: newgroup.users,
         docid: newgroup._id,
       });
-      console.log("The previous group is : ", prevgroups);
-      console.log("The User is : ", userindp);
       await SignUpUsermodel.updateOne(
         {
           username: user.username,
@@ -171,6 +180,29 @@ app.post("/api/creategroup", async (req, res) => {
         }
       );
     });
+
+    // Admin db updation
+    const admin = data.admin;
+    const userindp = await SignUpUsermodel.findOne({
+      username: admin.username,
+    });
+    let prevgroups = userindp.groups;
+    prevgroups.push({
+      groupname: newgroup.groupname,
+      users: newgroup.users,
+      docid: newgroup._id,
+      admin: admin,
+    });
+    await SignUpUsermodel.updateOne(
+      {
+        username: admin.username,
+      },
+      {
+        $set: {
+          groups: prevgroups,
+        },
+      }
+    );
     res.send({
       status: "success",
       group: newgroup,
@@ -179,6 +211,79 @@ app.post("/api/creategroup", async (req, res) => {
   }
 });
 
+// Get Groups
+app.get("/api/mygroups", async (req, res) => {
+  const user = jwt.decode(JSON.parse(req.headers.authorization).user);
+  const grps = await SignUpUsermodel.findOne({
+    username: user.username,
+    email: user.email,
+  });
+  res.send({ groups: grps.groups });
+});
+
+// Get Group
+app.get("/api/group", async (req, res) => {
+  const docid = req.headers.authorization;
+  const group = await GroupModel.findById(docid);
+  res.send({ group });
+});
+
+//getting messages
+app.get("/api/getmessages", async (req, res) => {
+  const id = req.headers.authorization;
+  const group = await GroupModel.findById(id);
+  res.send(group.messages);
+});
+
+// Sending a Message
+app.post("/api/sendmessage", async (req, res) => {
+  const data = req.body.body;
+  if (data.message === null || data.message === " ") {
+    res.send({
+      status: "error",
+      message: "not able to send the message",
+    });
+  } else {
+    const group = await GroupModel.findById(data.group._id);
+    var prevmsgs = group.messages;
+    prevmsgs.push({
+      message: data.message,
+      timestamp: data.timestamp,
+      user: data.user,
+    });
+    await GroupModel.updateOne(
+      {
+        _id: group._id,
+      },
+      {
+        $set: {
+          messages: prevmsgs,
+        },
+      }
+    );
+    res.send({
+      status: "success",
+      message: "message sent successfully",
+    });
+  }
+});
+
+// Socketio connections
+io1.on("connection", (socket) => {
+  console.log("The user has joined", socket.id);
+  socket.on("joined", (Data) => {
+    socket.join(Data.id)
+  });
+  socket.on("messaged", ({res,id}) => {
+    socket.join(id);
+    console.log("Messaged from socket server",res, " and the id is : ",id);
+    io1.to(id).emit("messaged",{res});
+  });
+  socket.on("disconnect", () => {
+    console.log("The user ", socket.id, " has disconnected");
+  });
+});
+
 // ---------End of Routes--------
 
-app.listen(5000);
+serverback.listen(5000);

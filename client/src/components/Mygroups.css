@@ -1,0 +1,147 @@
+.nogroups {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+.groupcontainer {
+  display: flex;
+}
+.mygroupsheader {
+  font-size: 24px;
+  padding: 10px;
+  font-weight: bold;
+  border-bottom: 1px solid grey;
+  width: 100%;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  background-color: black;
+}
+.groupcontainer_left {
+  flex: 0.2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  height: 100vh;
+}
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(34, 33, 33);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27334f;
+  border-radius: 50px;
+}
+.grpnamebox {
+  margin: 5px;
+  padding: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  transition-property: all;
+  transition-duration: 0.4s;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+}
+.grpnamebox:hover {
+  background-color: rgb(39, 38, 38);
+}
+.groupcontainer_right {
+  flex: 1;
+  background-color: rgb(28, 27, 27);
+  height: 90vh;
+  overflow-y: auto;
+}
+.groupcontainer_right_header {
+  padding: 10px;
+  border-bottom: 1px solid grey;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(28, 27, 27);
+  position: sticky;
+  top: 0;
+}
+.groupcontainer_right_header > p{
+  font-size: 24px;
+  font-weight: bold;
+}
+.participents_icon{
+  font-size: 30px !important;
+  cursor: pointer;
+}
+.participents_icon:hover{
+  background-color: rgb(55, 54, 54) !important;
+  border-radius: 40%;
+}
+.particibox{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.personicon{
+  font-size: 30px !important;
+}
+.adminblock{
+  color: greenyellow;
+  display: flex;
+  align-items: center;
+}
+
+/* Messages */
+.groupcontainer_right_messages{
+  padding-bottom: 80px;
+}
+.msgcontainer{
+  border: 1px solid grey;
+  padding: 10px;
+  max-width: 40%;
+  margin: 10px;
+  border-radius: 5px;
+}
+.msgername{
+  font-size: 15px;
+  color: grey;
+  font-weight: bold;
+}
+.msg{
+  font-size: 17px;
+}
+.timestamp{
+  font-size: 12px;
+  margin-top: 10px;
+  text-align: right;
+  color: grey;
+  font-weight: bold;
+}
+.msgform{
+  display: flex;
+  align-items: center;
+  width:80%;
+  position: absolute;
+  bottom: 0;
+  z-index: 100;
+  background-color: rgb(28, 27, 27);
+}
+.msginputbox{
+  width: 100%  !important;
+  margin-right: 5px !important;
+}
+.msgform Button{
+  text-transform: none !important;
+  background-color: blue !important;
+  color: white !important;
+  border-radius: 5px !important;
+}
